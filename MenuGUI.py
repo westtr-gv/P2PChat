@@ -67,7 +67,7 @@ class popupWindow(Frame):
         else:
             # try connecting to the host
             try:
-                client = Client(self.value)
+                client = Client(65432)
             except ConnectionRefusedError:
                 print("Connection refused!")
                  # make a new popup. warn previous was unavailable.

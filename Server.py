@@ -1,6 +1,6 @@
 import socket
-import threading
 from Client import Client
+from threading import Thread
 
 
 class Server():
@@ -19,6 +19,22 @@ class Server():
 
         s = self.initialize_server_socket(self.serverport)
 
+        serverthread = Thread(target = self.start_server_loop, args=[s])
+        serverthread.setDaemon(True)
+        serverthread.start()
+
+    
+    def initialize_server_socket(self, port):
+        # creates a socket that will communicate using the IPv4 (AF_INET) protocol with TCP (SOCK_STREAM).
+        s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+        # bind socket to port and setup to receive connection
+        s.bind( ( socket.gethostname(), port ) )
+        # listen for incoming connection setups
+        s.listen(5)
+
+        return s
+
+    def start_server_loop(self, s):
         # the main loop of a peer loops continously, accepting connections
         while True:
             # this is our local version of the client socket
@@ -36,18 +52,6 @@ class Server():
                 self.peers.append(address)
             except:
                 continue
-
-    
-    def initialize_server_socket(self, port):
-        # creates a socket that will communicate using the IPv4 (AF_INET) protocol with TCP (SOCK_STREAM).
-        s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-        # bind socket to port and setup to receive connection
-        s.bind( ( socket.gethostname(), port ) )
-        # listen for incoming connection setups
-        s.listen(5)
-
-        return s
-
     
     def sendtopeer( self, peerid, msgtype, msgdata, waitreply=True ):
         if self.router:
