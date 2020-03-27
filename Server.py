@@ -2,6 +2,7 @@ import socket
 from Client import Client
 from threading import Thread
 
+HEADERSIZE = 10
 
 class Server():
     connections = []
@@ -23,6 +24,10 @@ class Server():
         serverthread.setDaemon(True)
         serverthread.start()
 
+        # make server holder also a client
+        c = Client(serverport)
+        
+
     
     def initialize_server_socket(self, port):
         # creates a socket that will communicate using the IPv4 (AF_INET) protocol with TCP (SOCK_STREAM).
@@ -42,10 +47,7 @@ class Server():
             print(f"Connection from {address} has been established")
 
             try:
-                clientsocket.send(bytes("Welcome to the chat", "utf-8"))
-                # cThread = threading.Thread(target=self.handle_peer, args= [ conn, self.serverhost ] )
-                # cThread.daemon = True
-                # cThread.start()
+                self.server_send_message(clientsocket, "Welcome to the chat")
 
                 # keep a list of the joined users / connections
                 self.connections.append(clientsocket)
@@ -53,21 +55,8 @@ class Server():
             except:
                 continue
     
-    def sendtopeer( self, peerid, msgtype, msgdata, waitreply=True ):
-        if self.router:
-            nextpid, host, port = self.router( peerid )
-        if not self.router or not nextpid:
-            self.__debug( 'Unable to route %s to %s' % (msgtype, peerid) )
-            return None
-        return self.connectandsend( host, port, msgtype, msgdata, pid=nextpid,
-                        waitreply=waitreply )
-
-    
-    
-    def send_peers(self):
-        p = ""
-        for peer in self.peers:
-            p = p + peer + ', '
-
-        for connection in self.connections:
-            connection.send(b'\x11' + bytes(p, "utf-8"))
+    def server_send_message( self, clientsocket, data ):
+        # Add fixed length message header describing length buffer should accept
+        data = f'{len(data):<{HEADERSIZE}}' + data
+            
+        clientsocket.send(bytes(data, "utf-8"))

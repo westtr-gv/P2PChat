@@ -1,6 +1,8 @@
 import socket
 from threading import Thread
 
+HEADERSIZE = 10
+
 class Client():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -24,12 +26,29 @@ class Client():
         return s
 
     def start_client_loop(self, s):
+        full_msg = ''
+        new_msg = True
         while True:
             # have a stream of data as bytes. we need to decide how big of chunks we want
-            msg = s.recv(4096)
+            msg = s.recv(16)
+
+            if new_msg:
+                msglen = int(msg[:HEADERSIZE])
+                new_msg = False
 
             # decode bytes
-            print(msg.decode("utf-8"))
+            full_msg += msg.decode("utf-8")
+
+            if len(full_msg) - HEADERSIZE == msglen:
+                print(full_msg[HEADERSIZE:])
+
+                # now lets show the message on the GUI
+
+                full_msg = ''
+                new_msg = True
+
+        # decode bytes
+        print(full_msg)
 
     def send_message(self, message):
         print("Sending message to server")
