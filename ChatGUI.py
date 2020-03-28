@@ -54,9 +54,6 @@ class ChatGUI(Frame):
         ChatGUI.entry.delete('1.0', END)
 
     def add_message(self, message):
-        print("Adding message to screen")
-        print(message)
-
         self.enable_message_history()
 
         # append message to history

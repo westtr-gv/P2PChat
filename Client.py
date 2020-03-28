@@ -52,6 +52,12 @@ class Client():
                     print("Client received: ")
                     print(full_msg[HEADERSIZE:])
 
+                    # show it in the chat for all connected users
+                    from ChatGUI import ChatGUI
+                    chat = ChatGUI(ChatGUI.window, False)
+                    # decode the bytes that were sent into utf8
+                    chat.add_message(full_msg[HEADERSIZE:])
+
                     full_msg = ''
                     new_msg = True
             except:

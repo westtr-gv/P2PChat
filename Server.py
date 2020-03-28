@@ -83,14 +83,20 @@ class Server():
                     print("Server received: ")
                     print(full_msg[HEADERSIZE:])
 
-                    # show it in the chat for all connected users
-                    from ChatGUI import ChatGUI
-                    chat = ChatGUI(ChatGUI.window, False)
-                    # decode the bytes that were sent into utf8
-                    chat.add_message(full_msg[HEADERSIZE:])
+                    # got message. distribute to all recipients
+                    for participant in Server.connections:
+                        Server.send_message(participant, full_msg[HEADERSIZE:])
 
                     # reset
                     full_msg = ''
                     new_msg = True
             except:
                 continue
+
+    @staticmethod
+    def send_message(client, data):
+        # append a header to notify how many bytes to expect
+        data = f'{len(data):<{HEADERSIZE}}' + data
+        # send message to server
+        client.send(bytes(data, 'utf-8'))
+        print("Client sent: " + data)
