@@ -12,7 +12,8 @@ class Server():
     socket = {}
     connected = True
 
-    def __init__(self, serverport, userid=None, maxpeers = 5):        
+    def __init__(self, serverport, userid=None, maxpeers = 5):      
+        Server.connected = True  
         self.serverhost = socket.gethostname()
         self.serverport = int(serverport)
         self.maxpeers = int(maxpeers)
@@ -51,17 +52,22 @@ class Server():
     def start_server_loop(self):
         # the main loop of a peer loops continously, accepting connections
         while Server.connected:
-            # this is our local version of the client socket
-            clientsocket, address = Server.socket.accept()
-            print(f"Connection from {address} has been established")
 
-            handlerthread = Thread(target = self.handler,args=(clientsocket,))
-            handlerthread.setDaemon(True)
-            handlerthread.start()
+            try:
+                # this is our local version of the client socket
+                clientsocket, address = Server.socket.accept()
+                print(f"Connection from {address} has been established")
 
-            # keep a list of the joined users / connections
-            Server.connections.append(clientsocket)
-            Server.peers.append(address)
+                # keep a list of the joined users / connections
+                Server.connections.append(clientsocket)
+                Server.peers.append(address)
+
+                handlerthread = Thread(target = self.handler,args=(clientsocket,))
+                handlerthread.setDaemon(True)
+                handlerthread.start()
+            except ConnectionAbortedError as e:
+                print("Connection shut down!")
+                continue
 
     def handler(self, client):
         full_msg = ''

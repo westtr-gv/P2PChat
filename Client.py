@@ -10,6 +10,7 @@ class Client():
 
     def __init__(self, clientport, init=True):
         if init:
+            Client.connected = True
             self.clienthost = socket.gethostname()
             self.clientport = int(clientport)
 
@@ -25,8 +26,12 @@ class Client():
     def initialize_client_socket(self, port):
         # creates a socket that will communicate using the IPv4 (AF_INET) protocol with TCP (SOCK_STREAM).
         s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-        
-        s.connect((socket.gethostname(), port))
+
+        try:
+            s.connect((socket.gethostname(), port))
+        except ConnectionAbortedError as e:
+            print("Connection shut down!")
+    
 
         Connection.is_client = True
         Client.socket = s

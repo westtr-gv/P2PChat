@@ -2,8 +2,6 @@ from tkinter import *
 from MenuGUI import MenuGUI
 from Connection import Connection
 
-import emoji
-
 class ChatGUI(Frame):
     window = {}
     
@@ -66,6 +64,9 @@ class ChatGUI(Frame):
 
     def update(self, method):
         if method == "send":
+            if not Connection.is_client:
+                return
+
             self.message = ChatGUI.entry.get('1.0', END)
             if len(self.message) == 1:
                 return
@@ -87,6 +88,9 @@ class ChatGUI(Frame):
 
         elif method == "emoji":
             print('Opening Emoji Picker')
+            
+            import emoji
+            print(emoji.emojize('Python is :thumbs_up_sign:'))
 
             # insert the emoji at the current position
             ChatGUI.entry.insert(ChatGUI.entry.index(INSERT), " :) ")

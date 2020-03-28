@@ -15,29 +15,39 @@ class Connection():
             print("Nothing to close")
             return
 
+        if Connection.is_server:
+            Client.send_message("-- Chat closed --")
+
+            # show it in server's chat since they will be disconnected
+            import time
+            time.sleep(.01)
+
+        elif Connection.is_client:
+            Client.send_message("-- " + Connection.user + " left the chat --")
+
         if Connection.is_client:
             print("Ending client connection")
             # remove yourself
-            print("REMOVING SELF FIRST")
-            print(Server.connections)
-            print(Client.connections)
-            Server.connections.remove(Client.socket)
+            if Client.socket in Server.connections:
+                Server.connections.remove(Client.socket)
             Client.connected = False
             Client.socket.close()
             Connection.is_client = False
             
         if Connection.is_server:
             print("Ending all client connections")
-            Server.connected = False
-            for index, socket in Server.connections:
-                # close
-                socket.close()
-                # remove them from list of connected sockets
-                del Server.connections[index]
+            for socket in Server.connections:
+                if socket in Server.connections:
+                    # close
+                    socket.close()
+                    # remove them from list of connected sockets
+                    Server.connections.remove(socket)
+
 
             print("Ending server connection")
-            Server.socket.close()
             Connection.is_server = False
+            Server.socket.close()
+            Server.connected = False
 
     def is_valid_connection(self, connection):
         try:
