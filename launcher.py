@@ -1,6 +1,7 @@
 from tkinter import *
 from ChatGUI import ChatGUI
 from Server import Server
+from Connection import Connection
 
 window = Tk()
 
@@ -18,11 +19,7 @@ def main():
     window.mainloop()
 
 def before_close_window():
-    from Connection import Connection
-
-    print("Window closing.")
-    Connection.disconnect()
-    window.destroy()
+    Connection.before_close_window(window)
   
 if __name__== "__main__":
     main()

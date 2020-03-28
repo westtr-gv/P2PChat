@@ -12,13 +12,13 @@ class MenuGUI(Frame):
         self.menubar = Menu(window)
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label="Host Chat", command=lambda: Server(65432))
-        self.filemenu.add_command(label="Connect", command=self.popup)
+        self.filemenu.add_command(label="Connect", command=lambda: self.popup())
         self.filemenu.add_command(label="Send Message", command=lambda: ChatGUI.update("send"))
         self.filemenu.add_command(label="Leave Chat", command=lambda: Connection.disconnect())
 
         self.filemenu.add_separator()
 
-        self.filemenu.add_command(label="Exit", command=window.quit)
+        self.filemenu.add_command(label="Exit", command=lambda: Connection.before_close_window(self.window))
         self.menubar.add_cascade(label="File", menu=self.filemenu)
         self.editmenu = Menu(self.menubar, tearoff=0)
 

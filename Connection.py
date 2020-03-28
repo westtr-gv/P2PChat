@@ -7,6 +7,12 @@ class Connection():
     user = ""
 
     @staticmethod
+    def before_close_window(window):
+        print("Window closing.")
+        Connection.disconnect()
+        window.destroy()
+
+    @staticmethod
     def disconnect():
         from Client import Client
         from Server import Server

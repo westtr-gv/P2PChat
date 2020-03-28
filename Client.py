@@ -72,7 +72,14 @@ class Client():
     def send_message(data):
         # append a header to notify how many bytes to expect
         data = f'{len(data):<{HEADERSIZE}}' + data
-        # send message to server
-        Client.socket.send(bytes(data, 'utf-8'))
-        print("Client sent: " + data)
+        try:
+            # send message to server
+            Client.socket.send(bytes(data, 'utf-8'))
+            print("Client sent: " + data)
+        except BrokenPipeError as e:
+            # server disconnected. get out.
+            print("Server disconnected. Leaving chat.")
+            Client.connected = False
+            Client.socket.close()
+            Connection.is_client = False
 
