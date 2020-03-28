@@ -1,5 +1,6 @@
 from tkinter import *
 from MenuGUI import MenuGUI
+from Connection import Connection
 
 import emoji
 
@@ -53,6 +54,9 @@ class ChatGUI(Frame):
         ChatGUI.entry.delete('1.0', END)
 
     def add_message(self, message):
+        print("Adding message to screen")
+        print(message)
+
         self.enable_message_history()
 
         # append message to history
@@ -71,9 +75,13 @@ class ChatGUI(Frame):
 
 
             # prepend the sender and attach to message history
-            self.message = "[Me] " + self.message
-            self.add_message(self.message)
+            if Connection.user:
+                self.message = "[" + Connection.user + "] " + self.message
+            else:
+                self.message = "[Host] " + self.message
 
+            # Send the message to the Server as the Client
+            print("Sending a message to server")
             from Client import Client
             Client.send_message(self.message)
 

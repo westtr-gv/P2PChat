@@ -52,11 +52,16 @@ class popupWindow(Frame):
         self.l.pack()
         self.e = Entry(top)
         self.e.pack()
+        self.l2 = Label(top, text="Enter your name: ")
+        self.l2.pack()
+        self.e2 = Entry(top)
+        self.e2.pack()
         self.b = Button(top,text='Join Chat',command=self.cleanup)
         self.b.pack()
 
     def cleanup(self):
         self.value = self.e.get()
+        self.name = self.e2.get()
         self.top.destroy()
 
         c = Connection()
@@ -66,6 +71,7 @@ class popupWindow(Frame):
         else:
             # try connecting to the host
             try:
+                Connection.user = self.name
                 client = Client(65432)
             except ConnectionRefusedError:
                  # make a new popup. warn previous was unavailable.

@@ -22,9 +22,9 @@ class Server():
         self.userid = userid
 
 
-        s = self.initialize_server_socket(self.serverport)
+        Server.socket = self.initialize_server_socket(self.serverport)
 
-        serverthread = Thread(target = self.start_server_loop, args=[s])
+        serverthread = Thread(target = self.start_server_loop)
         serverthread.setDaemon(True)
         serverthread.start()
 
@@ -45,35 +45,52 @@ class Server():
         s.listen(5)
 
         Connection.is_server = True
-        Server.socket = s
 
         return s
 
-    def start_server_loop(self, s):
+    def start_server_loop(self):
         # the main loop of a peer loops continously, accepting connections
         while Server.connected:
             # this is our local version of the client socket
-            clientsocket, address = s.accept()
+            clientsocket, address = Server.socket.accept()
             print(f"Connection from {address} has been established")
 
+            handlerthread = Thread(target = self.handler,args=(clientsocket,))
+            handlerthread.setDaemon(True)
+            handlerthread.start()
+
+            # keep a list of the joined users / connections
+            Server.connections.append(clientsocket)
+            Server.peers.append(address)
+
+    def handler(self, client):
+        full_msg = ''
+        new_msg = True
+
+        while Server.connected:
             try:
-                data = clientsocket.recv(1024)
-                if len(data) > 0:
-                        print("client message:")
-                        print(clientsocket.recv(1024))
+                # have a stream of data as bytes. we need to decide how big of chunks we want
+                msg = client.recv(16)
 
+                if new_msg:
+                    msglen = int(msg[:HEADERSIZE])
+                    new_msg = False
 
-                self.server_send_message(clientsocket, "Welcome to the chat")
+                # decode bytes
+                full_msg += msg.decode("utf-8")
 
-                # keep a list of the joined users / connections
-                Server.connections.append(clientsocket)
-                Server.peers.append(address)
+                if len(full_msg) - HEADERSIZE == msglen:
+                    print("Server received: ")
+                    print(full_msg[HEADERSIZE:])
+
+                    # show it in the chat for all connected users
+                    from ChatGUI import ChatGUI
+                    chat = ChatGUI(ChatGUI.window, False)
+                    # decode the bytes that were sent into utf8
+                    chat.add_message(full_msg[HEADERSIZE:])
+
+                    # reset
+                    full_msg = ''
+                    new_msg = True
             except:
-                print("Err: Couldn't reach client!")
                 continue
-    
-    def server_send_message( self, clientsocket, data ):
-        # Add fixed length message header describing length buffer should accept
-        data = f'{len(data):<{HEADERSIZE}}' + data
-            
-        clientsocket.send(bytes(data, "utf-8"))

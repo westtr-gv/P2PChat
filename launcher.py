@@ -18,7 +18,10 @@ def main():
     window.mainloop()
 
 def before_close_window():
+    from Connection import Connection
+
     print("Window closing.")
+    Connection.disconnect()
     window.destroy()
   
 if __name__== "__main__":

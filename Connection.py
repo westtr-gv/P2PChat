@@ -4,6 +4,7 @@ class Connection():
     # class variables
     is_server = False
     is_client = False
+    user = ""
 
     @staticmethod
     def disconnect():
@@ -17,8 +18,10 @@ class Connection():
         if Connection.is_client:
             print("Ending client connection")
             # remove yourself
+            print("REMOVING SELF FIRST")
             print(Server.connections)
-            # Server.connections.remove(Client.socket)
+            print(Client.connections)
+            Server.connections.remove(Client.socket)
             Client.connected = False
             Client.socket.close()
             Connection.is_client = False

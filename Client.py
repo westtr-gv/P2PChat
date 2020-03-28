@@ -14,11 +14,11 @@ class Client():
             self.clientport = int(clientport)
 
 
-            self.s = self.initialize_client_socket(self.clientport)
+            Client.socket = self.initialize_client_socket(self.clientport)
 
-            self.send_message("Hello server, i am client")
+            Client.send_message(self.clienthost + " joined the chat")
 
-            clientthread = Thread(target = self.start_client_loop, args=[self.s])
+            clientthread = Thread(target = self.start_client_loop)
             clientthread.setDaemon(True)
             clientthread.start()
 
@@ -33,13 +33,13 @@ class Client():
 
         return s
 
-    def start_client_loop(self, s):
+    def start_client_loop(self):
         full_msg = ''
         new_msg = True
         while Client.connected:
             try:
                 # have a stream of data as bytes. we need to decide how big of chunks we want
-                msg = s.recv(16)
+                msg = Client.socket.recv(16)
 
                 if new_msg:
                     msglen = int(msg[:HEADERSIZE])
@@ -49,37 +49,19 @@ class Client():
                 full_msg += msg.decode("utf-8")
 
                 if len(full_msg) - HEADERSIZE == msglen:
+                    print("Client received: ")
                     print(full_msg[HEADERSIZE:])
-
-                    # now lets show the message on the GUI
 
                     full_msg = ''
                     new_msg = True
             except:
                 continue
 
-            # decode bytes
-            print(full_msg)
-
     @staticmethod
     def send_message(data):
-        from ChatGUI import ChatGUI
-        chat = ChatGUI(ChatGUI.window, False)
-        chat.add_message(data)
-
-        print("Sending message to server")
+        # append a header to notify how many bytes to expect
         data = f'{len(data):<{HEADERSIZE}}' + data
+        # send message to server
         Client.socket.send(bytes(data, 'utf-8'))
-
-    def recv_message(self, sock):
-        while True:
-            data = self.sock.recv(4096)
-            if not data:
-                break
-
-            # received list of people in chat
-            if data[0:1] == b'\x11':
-                print('Peers in chat: ')
-
-            print(str(data, 'utf-8'))
+        print("Client sent: " + data)
 
