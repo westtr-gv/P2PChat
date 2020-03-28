@@ -12,7 +12,6 @@ def main():
     
     window.config(menu=_chat_gui.MenuGUI.menubar)
     window.minsize(300,600)
-    # window.maxsize(400,600)
     window.configure(background='#fff')
 
     window.protocol("WM_DELETE_WINDOW", before_close_window)

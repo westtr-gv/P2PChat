@@ -14,8 +14,7 @@ class MenuGUI(Frame):
         self.filemenu.add_command(label="Host Chat", command=lambda: Server(65432))
         self.filemenu.add_command(label="Connect", command=self.popup)
         self.filemenu.add_command(label="Send Message", command=lambda: ChatGUI.update("send"))
-
-        self.filemenu.add_command(label="Leave Chat", command=self.donothing)
+        self.filemenu.add_command(label="Leave Chat", command=lambda: Connection.disconnect())
 
         self.filemenu.add_separator()
 
@@ -69,6 +68,5 @@ class popupWindow(Frame):
             try:
                 client = Client(65432)
             except ConnectionRefusedError:
-                print("Connection refused!")
                  # make a new popup. warn previous was unavailable.
                 popupWindow(self.window, "(\"" + self.value + "\" is unavailable)")
