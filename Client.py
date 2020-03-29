@@ -1,6 +1,7 @@
 import socket
 from threading import Thread
 from Connection import Connection
+import re
 
 HEADERSIZE = 10
 
@@ -56,12 +57,21 @@ class Client():
                 if len(full_msg) - HEADERSIZE == msglen:
                     print("Client received: ")
                     print(full_msg[HEADERSIZE:])
+                    final_msg = full_msg[HEADERSIZE:]
+
+                    # add image if exists
+                    # x = re.match(r'(::)([^)]+)(::)', final_msg)
+                    x = re.search('::(.*)::', final_msg)
+                    if x:
+                        # remove from message
+                        final_msg = final_msg[0: x.start():] + final_msg[x.end() + 1::]
+                    
 
                     # show it in the chat for all connected users
                     from ChatGUI import ChatGUI
                     chat = ChatGUI(ChatGUI.window, False)
                     # decode the bytes that were sent into utf8
-                    chat.add_message(full_msg[HEADERSIZE:])
+                    chat.add_message(final_msg)
 
                     full_msg = ''
                     new_msg = True

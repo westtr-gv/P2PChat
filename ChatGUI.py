@@ -1,6 +1,10 @@
+import os
 from tkinter import *
 from MenuGUI import MenuGUI
 from Connection import Connection
+from tkinter.filedialog import askopenfilename
+from PIL import Image,ImageTk
+
 
 class ChatGUI(Frame):
     window = {}
@@ -76,12 +80,18 @@ class ChatGUI(Frame):
             if len(self.message) == 1:
                 return
 
+            # insert the image 'code' into the text for later parsing
+            if hasattr(ChatGUI.entry, 'photo'):
+                sstring_strt = self.message[:ChatGUI.entry.photo.index] 
+                sstring_end = self.message[ChatGUI.entry.photo.index:] 
+                self.message = sstring_strt + "::" + ChatGUI.entry.photo.path + "::" + sstring_end
 
             # prepend the sender and attach to message history
             if Connection.user:
                 self.message = "[" + Connection.user + "] " + self.message
             else:
                 self.message = "[Host] " + self.message
+
 
             # Send the message to the Server as the Client
             print("Sending a message to server")
@@ -92,9 +102,22 @@ class ChatGUI(Frame):
             self.clear_message()
 
         elif method == "emoji":
-            print('Opening Emoji Picker')
+            # show an "Open" dialog box and return the path to the selected file
+            # filename = askopenfilename(initialdir=os.getcwd(), title="Select Emoji", filetypes=[("gifs", "*.gif")])
+            try:
+                filename = "./emojis/smile.gif"
 
-            # insert the emoji at the current position
-            ChatGUI.entry.insert(ChatGUI.entry.index(INSERT), " :) ")
+                img = Image.open(filename)
+                photoImg = ImageTk.PhotoImage(img)
+
+                pos = ChatGUI.entry.index(INSERT)
+                ChatGUI.entry.image_create(pos, image = photoImg)
+                ChatGUI.entry.photo = photoImg
+                ChatGUI.entry.photo.path = filename
+                ChatGUI.entry.photo.index = len(ChatGUI.entry.get('1.0', END))
+            except:
+                print("Failed to attach emoji")
+                return
+
         else: # reset
             self.message = ''
