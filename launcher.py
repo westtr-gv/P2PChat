@@ -3,9 +3,10 @@ from ChatGUI import ChatGUI
 from Server import Server
 from Connection import Connection
 
+
 window = Tk()
 
-def main():
+def main(): 
     window.title("P2PChat")
     window.geometry("300x600")
 

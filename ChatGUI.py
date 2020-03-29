@@ -51,6 +51,11 @@ class ChatGUI(Frame):
         self.message = ''
         ChatGUI.entry.delete('1.0', END)
 
+    def clear_conversation(self):
+        self.enable_message_history()
+        ChatGUI.message_history.delete('1.0', END)
+        self.disable_message_history()
+
     def add_message(self, message):
         self.enable_message_history()
 
@@ -88,9 +93,6 @@ class ChatGUI(Frame):
 
         elif method == "emoji":
             print('Opening Emoji Picker')
-            
-            import emoji
-            print(emoji.emojize('Python is :thumbs_up_sign:'))
 
             # insert the emoji at the current position
             ChatGUI.entry.insert(ChatGUI.entry.index(INSERT), " :) ")

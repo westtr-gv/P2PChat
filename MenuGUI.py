@@ -22,17 +22,10 @@ class MenuGUI(Frame):
         self.menubar.add_cascade(label="File", menu=self.filemenu)
         self.editmenu = Menu(self.menubar, tearoff=0)
 
+        self.editmenu.add_command(label="Clear Conversation", command=ChatGUI.clear_conversation)
         self.editmenu.add_command(label="Clear Message", command=ChatGUI.clear_message)
-
         self.menubar.add_cascade(label="Edit", menu=self.editmenu)
-        self.helpmenu = Menu(self.menubar, tearoff=0)
-        self.helpmenu.add_command(label="Tutorial", command=self.donothing)
-        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
 
-    def donothing(self):
-        filewin = Toplevel(window)
-        button = Button(filewin, text="Do nothing button")
-        button.pack()
 
     def popup(self):
         self.w = popupWindow(self.window)
