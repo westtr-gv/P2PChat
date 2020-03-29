@@ -2,7 +2,6 @@ import os
 from tkinter import *
 from MenuGUI import MenuGUI
 from Connection import Connection
-from tkinter.filedialog import askopenfilename
 from PIL import Image,ImageTk
 
 
@@ -64,7 +63,7 @@ class ChatGUI(Frame):
         self.enable_message_history()
 
         # append message to history
-        ChatGUI.message_history.insert(END, message + '\n')
+        ChatGUI.message_history.insert(END, '\n' + message)
 
         # scroll to bottom of chat
         ChatGUI.message_history.see(END)

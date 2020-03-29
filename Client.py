@@ -1,3 +1,4 @@
+from tkinter import *
 import socket
 from threading import Thread
 from Connection import Connection
@@ -72,6 +73,24 @@ class Client():
                     chat = ChatGUI(ChatGUI.window, False)
                     # decode the bytes that were sent into utf8
                     chat.add_message(final_msg)
+
+
+                    # add the image
+                    if x:
+                        from PIL import Image,ImageTk
+                        code = x.group(0)
+                        filename = code[2:len(code)-2]
+                        img = Image.open(filename)
+                        photoImg = ImageTk.PhotoImage(img)
+
+                        ChatGUI.message_history.config(state='normal')
+                        ChatGUI.message_history.image_create(INSERT, image = photoImg)
+                        # scroll to bottom of chat
+                        ChatGUI.message_history.see(END)
+                        ChatGUI.message_history.config(state='disabled')
+                        # reset
+                        x = None
+
 
                     full_msg = ''
                     new_msg = True
